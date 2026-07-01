@@ -4,229 +4,10 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        <link rel="stylesheet" href="styles.css">
+
         <title>sudoku.coach Editor</title>
 
-        <style>
-            /* general style */
-
-            :root {
-                /* devastating names i know */
-                --blk: #161f37;
-                --drkb: #1f2c4d;
-                --blue: #2f4275;
-                --ligb: #c2d5ff;
-                --yel: #f5ae3d;
-                --wht: #ffffff;
-            }
-
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana; /* seoge my beloved */
-                max-width: 800px;
-                margin: 40px auto;
-                padding: 0 20px;
-                color: var(--wht);
-                background-color: var(--blue);
-            }
-
-            .container {
-                max-width: 900px;
-                margin: 15px auto;
-                padding: 20px;
-                border: 3px solid #161f37;
-                background: var(--drkb);
-                border-radius: 12px;
-                position: relative;
-            }
-
-            @media (max-width: 768px) {
-                .actions { flex-direction: column; }
-                .actions button { width: 100%; }
-                /* you're not getting split screen today */
-            }
-
-            h1 {
-                font-size: 1.5rem;
-                text-align: center;
-                margin-bottom: 30px;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-                margin-top: 15px;
-            }
-            
-            h4 {
-                font-size: 14px;
-                color: var(--yel);
-            }
-
-            /* input boxes */
-
-            .box {
-                margin-bottom: 20px;
-            }
-
-            label {
-                display: block;
-                font-weight: bold;
-                margin-bottom: 5px;
-                font-size: 0.9rem;
-            }
-
-            textarea {
-                width: 100%;
-                height: 180px;
-                padding: 10px;
-                background: var(--blk);
-                color: var(--wht);
-                border-radius: 8px;
-                font-family: monospace;
-                border: 1px solid var(--ligb);
-                box-sizing: border-box;
-                resize: vertical;
-            } 
-
-            textarea:focus {
-                outline: none;
-                border-color: var(--yel);
-            }
-            
-            /* about popup */
-
-            .info-icon {
-                position: absolute;
-                top: 15px;
-                right: 15px;
-                font-size: 1.5rem; 
-                color: var(--ligb);
-                cursor: pointer;
-                user-select: none;
-                padding: 5px;
-            }
-
-            .modal {
-                position: fixed;
-                z-index: 100;
-                inset: 0;
-                background-color: rgba(0,0,0,.6);
-                display: flex;
-                align-items: center;
-                padding: 20px;
-                box-sizing: border-box;
-            }
-
-            .modal-content {
-                background-color: var(--drkb);
-                width: 100%;
-                max-width: 500px;
-                max-height: 80vh;
-                overflow-y: auto;
-                padding: 20px;
-                border: 2px solid var(--blk);
-                border-radius: 8px;
-                color: var(--wht);
-                box-sizing: border-box;
-            } /* spam until pretty */
-
-            .modal-content h2 {
-                margin-top: 0;
-                font-size: 1.25rem;
-                color: var(--yel);
-            }
-
-            .modal-content ul {
-                padding-left: 20px;
-                margin-bottom: 0;
-            }
-            
-            .close {
-                color: var(--ligb);
-                float: right;
-                font-size: 28px;
-                cursor: pointer;
-                line-height: 0.8;
-                padding: 0 0 15px 15px;
-            }
-
-            /* link */
-
-            .link-button {
-                background: none;
-                border: none;
-                color: var(--ligb);
-                font-size: 0.85rem;
-                padding: 0;
-                cursor: pointer;
-            }
-            
-            .link-button:hover {
-                text-decoration: underline;
-            }
-
-            /* button */
-
-            button {
-                padding: 8px 16px;
-                margin: 0 5px;
-                font-size: 0.9rem;
-                cursor: pointer;
-                background-color: var(--drkb);
-                background: var(--blue);
-                color: var(--wht);
-                border: 1px solid var(--ligb);
-                border-radius: 4px;
-            }
-
-            button:hover {
-                filter: brightness(1.3);
-            }
-
-            /* comment display */
-
-            .comment-box {
-                margin-top: 20px;
-                padding: 15px;
-                background: var(--blk);
-                border: 1px solid var(--wht);
-                border-radius: 10px;
-            }
-
-            .comment-title {
-                font-weight: bold;
-                margin-bottom: 8px;
-                color: var(--wht);
-            }
-
-            #commentText {
-                white-space: pre-wrap;
-                color: var(--ligb);
-            }
-
-            /* message */
-
-            .status {
-                text-align: center;
-                font-size: 0.9rem;
-                min-height: 20px;
-                margin-top: 5px;
-            }
-
-            .actions {
-                text-align: center;
-                margin: 15px 0;
-                display: flex;
-                gap: 10px;
-                justify-content: center;
-            }
-            
-            #encodedInput { min-height: 120px; }
-            
-            #jsonInput { min-height: 400px; }
-            
-            .error { color: #dd5000; }
-            .success { color: var(--yel); }
-
-        </style>
     </head>
 
     <body>
@@ -237,283 +18,123 @@
             <div class="modal-content">
                 <span id="closeModal" class="close">&times;</span>
 
-                    <h2>What is this?</h2>
-                    <p>This tool lets you convert between Sudoku Coach strings and their JSON representation, making it much easier to inspect, modify, and experiment with puzzle data</p>
-                    <p>sudoku.coach stores puzzles as compressed text strings that usually start with <code>SCv7_32_</code></p>
-                    <p>These strings contain puzzle information such as:</p>
-                    <ul>
-                        <li>Grid, regions and digits</li>
-                        <li>Constrains</li>
-                        <li>Cosmetic elements</li>
-                        <li>Player progress and candidates (when present)</li>
-                    </ul>
-                    <p></p> <!-- empty thing for spacing --> 
+                <h2>What is this?</h2>
+                <p>This tool lets you convert between Sudoku Coach strings and their JSON representation, making it much easier to inspect, modify, and experiment with puzzle data</p>
+                <p>sudoku.coach stores puzzles as compressed text strings that usually start with <code>SCv7_32_</code></p>
+                <p>These strings contain puzzle information such as:</p>
+                <ul>
+                    <li>Grid, regions and digits</li>
+                    <li>Constrains</li>
+                    <li>Cosmetic elements</li>
+                    <li>Player progress and candidates (when present)</li>
+                </ul>
+                <p></p> <!-- empty thing for spacing --> 
 
-                    <h2>Why would I use it?</h2>
-                    <ul>
-                        <li>See what's actually inside a Sudoku Coach string</li>
-                        <li>Edit puzzle definitions by hand</li>
-                        <li>Edit constraints without the limitations of the editor</li>
-                        <li>Debug exported puzzles</li>
-                    </ul>
-                    <p></p> <!-- another one lol -->
+                <h2>Why would I use it?</h2>
+                <ul>
+                    <li>See what's actually inside a Sudoku Coach string</li>
+                    <li>Edit puzzle definitions by hand</li>
+                    <li>Edit constraints without the limitations of the editor</li>
+                    <li>Debug exported puzzles</li>
+                </ul>
+                <p></p> <!-- another one lol -->
 
-                    <h2>Where to start?</h2>
-                    <p>Try loading a sample puzzle and see how the conversion works</p>
-                    <p><a href="#" onclick="SCBoardExample(); return false;">Random Board</a></p>
+                <h2>Where to start?</h2>
+                <p>Try loading a sample puzzle and see how the conversion works</p>
+                <p><a href="#" onclick="SCBoardExample(); return false;">Random Board</a></p>
 
-                    <h2>Privacy</h2>
-                    <p>Everything happens locally in your browser. Nothing is uploaded, transmitted, or stored anywhere else.</p>
-                    <h4>This tool is not affiliated with Sudoku Coach. Sudoku Coach is developed by Jan Feldmann. This utility is an independent converter/editor for the SCv7 format.</h4>
-                    <h1></h1> <!-- last one -->
+                <h2>Privacy</h2>
+                <p>Everything happens locally in your browser. Nothing is uploaded, transmitted, or stored anywhere else.</p>
+                <h4>This tool is not affiliated with sudoku.coach, sudoku.coach is developed by Jan Feldmann. This utility is an independent converter/editor for the SCv7 format.</h4>
+                <h1></h1> <!-- last one -->
 
-                    <p>If you have any suggestions, please contact me on Discord (Username: omarbuso)</p> 
+                <p>If you have any suggestions, please contact me on Discord (Username: omarbuso)</p> 
             </div>
         </div>
 
         <h1><span style="color: var(--yel)">sudoku.coach</span> Board Editor</h1>
 
-            <div class="box">
+        <div class="box">
             <label for="encodedInput">SCv7 String...
-            <button class="link-button" onclick="openInSudokuCoach()">Open</button>
-        </label>
+                <button class="link-button" onclick="openInSudokuCoach()">Open</button>
+            </label>
             <textarea id="encodedInput" placeholder="Paste SCv7_32_ string here..."></textarea>
         </div>
-            <div class="box">
+
+        <div class="box">
             <label for="jsonInput">JSON Data</label>
             <textarea id="jsonInput" placeholder="Modify JSON here..."></textarea>
         </div>
-        
+                
         <div class="actions">
             <button onclick="decodeSCString()">Decode to JSON</button>
             <button onclick="encodeFormatJson()">Encode to String</button>
+            <select id="insertType" onchange="insertTemplate(this.value)">
+                <option value="" selected disabled>Add...</option>
+                <optgroup label="JSON Base">
+                    <option value="emptyBoard">Empty Board</option>
+                    <option value="regions">Regions (Auto)</option>
+                </optgroup>
+
+                <optgroup label="Global Constraints">
+                    <option value="diagonalNegative">Diagonal (\)</option>
+                    <option value="diagonalPositive">Diagonal (/)</option>
+                    <option value="antiKnight">Anti-Knight</option>
+                    <option value="antiKing">Anti-King</option>
+                    <option value="nonconsecutive">Nonconsecutive</option>
+                    <option value="entropy">Entropy</option>
+                </optgroup>
+
+                <optgroup label="Constraints">
+                    <option value="twoCellSum">Two-Cell-Sum (XV)</option>
+                    <option value="odd">Odd</option>
+                    <option value="even">Even</option>
+                    <option value="thermometer">Thermometer</option>
+                    <option value="arrow">Arrow</option>
+                    <option value="pillArrow">Pill Arrow</option>
+                    <option value="whisper">Whisper Line</option>
+                    <option value="betweenLine">Between Line</option>
+                    <option value="lockoutLine">Lockout Line</option>
+                    <option value="renban">Renban Line</option>
+                    <option value="entropicLine">Entropic Line</option>
+                    <option value="modularLine">Modular Line</option>
+                    <option value="palindromeLine">Palindrome Line</option>
+                    <option value="consecutiveLine">Consecutive Line</option>
+                    <option value="regionSumLine">Region-Sum Line</option>
+                    <option value="difference">Difference (White Dot)</option>
+                    <option value="ratio">Ratio (Black Dot)</option>
+                    <option value="cage">Cage</option>
+                    <option value="quadruple">Quadruple</option>
+                    <option value="greaterLess">Greater/Less</option>
+                    <option value="minimum">Minimum</option>
+                    <option value="maximum">Maximum</option>
+                    <option value="sandwich">Sandwich</option>
+                    <option value="littleKiller">Little Killer</option>
+                </optgroup>
+
+                <optgroup label="Cosmetics">
+                    <option value="cosmeticLine">Cosmetic Line</option>
+                    <option value="cosmeticShape">Cosmetic Shape</option>
+                    <option value="cosmeticText">Cosmetic Text</option>
+                    <option value="cosmeticCage">Cosmetic Cage</option>
+                    <option value="fog">Fog of War</option>
+                    <option value="comment">Comment</option>
+                </optgroup>
+            </select>
             <div id="statusMessage" class="status"></div>
         </div>
 
         <div id="commentBox" class="comment-box" style="display:none;">
-            <div class="comment-title">Comment</div>
+            <div class="comment-title">Comments</div>
             <div id="commentText"></div>
         </div>
+
     </div>
-    
+
+    <h4>Made by OmarBuso</h4>
     <h4>Works best on Mobile</h4>
     
-    <script>
-        const prefix = "SCv7_32_";
-        
-        function setStatus(text, isError = false) {
-            const el = document.getElementById("statusMessage");
-            el.textContent = text;
-            el.className = "status " + (isError ? "error" : "success");
-        }
-        
-        // copy to clipboard... but where is the button?
-        async function copyText(inputId, statusId) {
-            const text = document.getElementById(inputId).value;
-            if (!text) return;
-            try {
-                await navigator.clipboard.writeText(text);
-                setStatus(statusId, "Copied to clipboard");
-            } catch (err) {
-                setStatus(statusId, "Failed to copy", true);
-            }
-        }
-        
-        // so you dont have to import it manually!
-        async function openInSudokuCoach() {
-            let text = document.getElementById("encodedInput").value.trim();
-            
-            if (!text) {
-                setStatus("No sudoku.coach string found", true);
-                return;
-            }
-            const url = "https://sudoku.coach/en/construct/" + text
-            window.open(url, "_blank");
-        }
-        
-        // modal logic
-        const modal = document.getElementById("infoModal");
-        const infoIcon = document.getElementById("infoIcon");
-        const closeModal = document.getElementById("closeModal");
+    <script src="script.js"></script>
 
-        infoIcon.onclick = () => { modal.style.display = "block"; };
-
-        closeModal.onclick = () => { modal.style.display = "none"; };
-
-        window.onclick = function(event) {
-            if (event.target == modal) { modal.style.display = "none"; }
-        }
-
-        // Base32hex logic
-        const base32hex = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
-        
-        function base32hexEncode(bytes) {
-            let bits = 0, value = 0, output = "";
-            for (const byte of bytes) {
-                value = (value << 8) | byte;
-                bits += 8;
-                while (bits >= 5) {
-                    output += base32hex[(value >>> (bits - 5)) & 31];
-                    bits -= 5;
-                }
-            }
-            if (bits > 0) {
-                output += base32hex[(value << (5 - bits)) & 31];
-            }
-            return output;
-        }
-        
-        function base32hexDecode(str) {
-            str = str.toUpperCase();
-            let bits = 0, value = 0;
-            const output = [];
-            for (const ch of str) {
-                const idx = base32hex.indexOf(ch);
-                if (idx === -1) {
-                    throw new Error(`Invalid character: ${ch}`);
-                }
-                value = (value << 5) | idx;
-                bits += 5;
-                if (bits >= 8) {
-                    output.push((value >>> (bits - 8)) & 255);
-                    bits -= 8;
-                }
-            }
-            return new Uint8Array(output);
-        }
-        
-        // compression
-        async function compressZlib(bytes) {
-            const stream = new CompressionStream("deflate");
-            const writer = stream.writable.getWriter();
-            writer.write(bytes);
-            writer.close();
-            const compressed = await new Response(stream.readable).arrayBuffer();
-            return new Uint8Array(compressed);
-        }
-        
-        async function decompressZlib(bytes) {
-            const stream = new DecompressionStream("deflate");
-            const writer = stream.writable.getWriter();
-            writer.write(bytes);
-            writer.close();
-            const decompressed = await new Response(stream.readable).arrayBuffer();
-            return new Uint8Array(decompressed);
-        }
-        
-
-        var example_strings = [ "SCv7_32_f2e9alatdvljc37t5eefd40n4bo4fr5efqshguk1c700c32rg4v39gd0926aql8m0d4kt6omvnno7r3smirkn1qb1a4ugk27st899sp2b9nv8nv6j52771a2m7is21uhri5uro5nio28ld8tq8bnnqeq6hkjrre51a2qfllg9esji5l3bu6pt3vudlae65emb1h3ipmmkejmh0elt33mgsca2o3qvc2qk5kcr3msav9pk6244epapikibliuurchcnqii637v4q1e1s4jehk10c8j2iov4b0399lg84msd4b6p75vcoti6efgnkaasc9qruomc2q6hsoc8nemsi1l8eo0l946d1rvb6rgl5t81mkvhrc8nb8s1dce2ok5cclbrr18afhfdsnqnd5tgc8qqt7307v1u89rr5mhu0id18m6vnt5nl62icjpulsm6okcvvb5fa8v8df637jsb1gsof82f36bu7i0jvth6dg4lvl2gcecm6kb2f59tc1de68m3uducg9dkr1nsn42i4qcf3mmhkc93ri6houdcboed6a39r8qhjmet2vprpkanj176vitqjagkkht8raumgg8vpbto9o4q643lcsafftm1qbf789817r5nqqgbmv1v3c14f6a075953d440p8b3ouig6gbc1341mi7um37b22uin2qeiuvm54v787d41k0i8kt0s4k88i2ik8051ctmjd1hkdjcc7j7kbc7c3b1dg5insc5ejk0qvvp12n1t5nackg1ihqc0jnes76h08jra9gdoc0qc2m9689g30s8mo39q8lif3ar5cag2t70bh7cpmotb3cm6q79druhtl17blllo2prd43gk22idca9stc50hr61af7rnt037mcp1jgor2iv9m4h0dp8ltaklh1jqp9bhkdimi843kvk461k7s677haiem9pc0160r835il5vcsta3f855t8jc77c5a2srb093a26s7cp0fr00rc7jrt1rr1ep3sdqv3sccihdkmagqep5jet5n0dru9okhq6ntv6rocnnffgnsd1a5sin5c9fb8u8t4f4aaefdhjtf0522ei3ler5lv4roucosbtbfvkj07ci7rh6j3hdrjumgpqrv955f6pprsbpgjrvsfsq6mil93kq5v59nr7t7vvgqjhhtl1j0mo6drd2qv7q9pp9eb8t7n3un7l75j2t88sjfrv85vov20305cnm8ks6pd4e2j773ovkbkn81mdg"
-        ]; // i might place more examples, but this is enough for now
-
-        async function SCBoardExample() {
-            var index = Math.floor(Math.random() * example_strings.length); // why is that so complicated...
-            document.getElementById("encodedInput").value = example_strings[index];
-            await decodeSCString();
-            modal.style.display = "none";
-            setStatus("Example loaded");
-        }
-
-        // custom JSON formatter
-        // suffering ft. regex
-        function formatSudokuJson(obj) {
-            const raw = JSON.stringify(obj, null, 2);
-        
-            let result = raw;
-        
-            // collapse arrays of primitives or arrays-of-arrays onto one line
-            result = result.replace(/\[[\s\n]+((?:(?:\[[\s\n]+[\d.,\s\n-]+[\s\n]+\]|[\d.,-]+)[\s\n]*,?[\s\n]*)+)[\s\n]+\]/g, (match) => {
-                const inner = match
-                    .replace(/\[\s+/g, '[')
-                    .replace(/\s+\]/g, ']')
-                    .replace(/,\s+/g, ', ')
-                    .trim();
-                return inner;
-            });
-        
-            // collapse simple inline objects { "key": value, ... } that are already on their own indented lines inside a segment
-            result = result.replace(/\{\s*\n\s*((?:"[^"]+"\s*:\s*(?:"[^"]*"|[\d.]+|true|false|null)\s*,?\s*\n\s*)+)\s*\}/g, (match, inner) => {
-                const flat = inner.trim().replace(/\s*\n\s*/g, ' ').replace(/,\s+/g, ', ');
-                return `{ ${flat} }`;
-            });
-        
-            // also collapse empty objects {}
-            result = result.replace(/\{\s*\n\s*\}/g, '{ }');
-        
-            // collapse the full segment line { "cells": [...], "parameters": { ... } }  onto one line
-            result = result.replace(
-                /\{\s*\n\s*"cells": (\[.*?\])\s*,\s*\n\s*"parameters": (\{.*?\})\s*\n\s*\}/gs,
-                (_, cells, params) => `{ "cells": ${cells}, "parameters": ${params} }`
-            );
-        
-            return result;
-        }
-
-        function findComments(obj, results = []) {
-            if (!obj || typeof obj !== "object") return results;
-            if ("_comment" in obj) results.push(obj._comment);
-            if (Array.isArray(obj)) {
-                for (const item of obj)
-                    findComments(item, results);
-            } else {
-                for (const value of Object.values(obj)) findComments(value, results);
-            }
-            return results;
-        }
-        
-        function showComment(obj) {
-            const box = document.getElementById("commentBox");
-            const text =document.getElementById("commentText");
-            const comments = findComments(obj);
-            if (comments.length > 0) {
-                text.innerHTML = comments.map(c => String(c)).join("<hr>");
-                box.style.display = "block";
-            } else { box.style.display = "none"; }
-        }
-
-        
-        // decode the string
-        async function decodeSCString() {
-            try {
-                let text = document.getElementById("encodedInput").value.trim();
-                if (!text) throw new Error("Input is empty");
-                
-                if (text.startsWith(prefix)) {
-                    text = text.slice(prefix.length);
-                }
-        
-                const compressed = base32hexDecode(text);
-                const jsonBytes = await decompressZlib(compressed);
-                const jsonText = new TextDecoder().decode(jsonBytes);
-                const obj = JSON.parse(jsonText);
-        
-                document.getElementById("jsonInput").value = formatSudokuJson(obj);
-
-                showComment(obj);
-                setStatus("Successfully decoded");
-            } catch (err) {
-                setStatus(err.message, true);
-            }
-        }
-        
-        // encode the json
-        async function encodeFormatJson() {
-            try {
-                const text = document.getElementById("jsonInput").value.trim();
-                if (!text) throw new Error("JSON input is empty");
-        
-                const obj = JSON.parse(text);
-                const compact = JSON.stringify(obj);
-                const bytes = new TextEncoder().encode(compact);
-                const compressed = await compressZlib(bytes);
-                const encoded = base32hexEncode(compressed).toLowerCase();
-        
-                document.getElementById("encodedInput").value = prefix + encoded;
-                setStatus("Successfully encoded");
-            } catch (err) {
-                setStatus(err.message, true);
-            }
-        }
-
-    </script>
     </body>
 </html>
